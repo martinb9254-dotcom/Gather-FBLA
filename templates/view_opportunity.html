@@ -1,0 +1,186 @@
+{% extends "base_app.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='view_opportunity.css') }}">
+    <title>{{ opportunity.title }}</title>
+{% endblock %}
+
+{% block content %}
+<main class="opportunity-page">
+    <section class="opportunity-hero" aria-labelledby="opportunity-title">
+        <img class="opportunity-image"
+             src="{{ url_for('static', filename='uploads/' ~ opportunity.image_filename) if opportunity.image_filename else url_for('static', filename='default-opportunity.png') }}"
+             alt="{{ opportunity.title }}">
+
+        <div class="opportunity-hero-content">
+            <div class="eyebrow">Volunteer opportunity</div>
+            <span class="cause-tag">{{ opportunity.cause }}</span>
+
+            <p class="organization-name">
+                {{ opportunity.organization.name }}
+            </p>
+
+            <h1 id="opportunity-title">{{ opportunity.title }}</h1>
+
+            <p class="opportunity-summary">
+                {{ opportunity.description }}
+            </p>
+        </div>
+    </section>
+
+    <div class="opportunity-sections">
+        <section class="detail-card about-card" aria-labelledby="about-title">
+            <div class="eyebrow">The opportunity</div>
+            <h2 id="about-title">What you'll do</h2>
+
+            <p>{{ opportunity.activities }}</p>
+
+            <div class="materials-section">
+                <h3>What to bring</h3>
+                <p>{{ opportunity.materials }}</p>
+            </div>
+        </section>
+
+        <section class="detail-card signup-card" aria-labelledby="details-title">
+            <div class="eyebrow">Plan your visit</div>
+            <h2 id="details-title">The details</h2>
+
+            <div class="detail-row">
+                <span class="detail-icon">
+                    <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                </span>
+                <div>
+                    <span class="detail-label">Date</span>
+                    <strong>
+                        {{ opportunity.event_date.strftime('%A, %B %d, %Y') }}
+                    </strong>
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-icon">
+                    <i class="bi bi-clock" aria-hidden="true"></i>
+                </span>
+                <div>
+                    <span class="detail-label">Time</span>
+                    <strong>
+                        {{ opportunity.start_time.strftime('%I:%M %p').lstrip('0') }}
+                        –
+                        {{ opportunity.end_time.strftime('%I:%M %p').lstrip('0') }}
+                    </strong>
+                    <small>{{ opportunity.timezone }}</small>
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-icon">
+                    <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                </span>
+                <div>
+                    <span class="detail-label">Location</span>
+                    <strong>{{ opportunity.location }}</strong>
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-icon">
+                    <i class="bi bi-people" aria-hidden="true"></i>
+                </span>
+                <div>
+                    <span class="detail-label">Volunteer spots</span>
+                    <strong>
+                        {{ spots_left }} of
+                        {{ opportunity.volunteer_requirement }}
+                        spots open
+                    </strong>
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-icon">
+                    <i class="bi bi-person-check" aria-hidden="true"></i>
+                </span>
+                <div>
+                    <span class="detail-label">Minimum age</span>
+                    <strong>
+                        <strong>
+                            {% if opportunity.minimum_age %}
+                                {{ opportunity.minimum_age }} years old
+                            {% else %}
+                                All ages welcome
+                            {% endif %}
+                        </strong>
+                    </strong>
+                </div>
+            </div>
+
+            {% if existing_signup and existing_signup.status == "approved" %}
+                <button class="signup-btn" type="button" disabled>
+                    You're signed up
+                    <i class="bi bi-check-lg" aria-hidden="true"></i>
+                </button>
+
+            {% elif existing_signup and existing_signup.status == "pending" %}
+                <button class="signup-btn" type="button" disabled>
+                    Signup pending review
+                    <i class="bi bi-clock" aria-hidden="true"></i>
+                </button>
+
+            {% elif existing_signup and existing_signup.status == "waitlisted" %}
+                <button class="signup-btn" type="button" disabled>
+                    You're on the waitlist
+                    <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+                </button>
+
+            {% elif existing_signup and existing_signup.status in ["denied", "removed", "cancelled"] %}
+                <button class="signup-btn" type="button" disabled>
+                    Signup unavailable
+                </button>
+
+            {% elif opportunity.status != "open" or event_has_passed %}
+                <button class="signup-btn" type="button" disabled>
+                    Signups closed
+                </button>
+
+            {% elif opportunity.minimum_age is not none
+                and user.age is not none
+                and user.age|int < opportunity.minimum_age|int %}
+                <button class="signup-btn" type="button" disabled>
+                    Minimum age not met
+                </button>
+
+            {% else %}
+                <form method="post"
+                      action="{{ url_for('opportunities.signup_opportunity', opportunity_id=opportunity.id) }}">
+                    <button class="signup-btn" type="submit">
+                        {% if spots_left == 0 %}
+                            Join waitlist
+                        {% else %}
+                            Sign up to volunteer
+                        {% endif %}
+                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </button>
+                </form>
+            {% endif %}
+
+            {% if saved_entry %}
+                <form method="post"
+                      action="{{ url_for('opportunities.unsave_opportunity', opportunity_id=opportunity.id) }}">
+                    <button type="submit" class="save-opportunity-btn is-saved">
+                        <i class="bi bi-bookmark-fill" aria-hidden="true"></i>
+                        Saved opportunity
+                    </button>
+                </form>
+            {% else %}
+                <form method="post"
+                      action="{{ url_for('opportunities.save_opportunity', opportunity_id=opportunity.id) }}">
+                    <button type="submit" class="save-opportunity-btn">
+                        <i class="bi bi-bookmark" aria-hidden="true"></i>
+                        Save for later
+                    </button>
+                </form>
+            {% endif %}
+        </section>
+    </div>
+</main>
+{% endblock %}

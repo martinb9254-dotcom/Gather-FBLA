@@ -1,0 +1,54 @@
+{% extends "base_public.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <title>Login</title>
+{% endblock %}
+
+{% block content %}
+    <section class="login">
+        <div class="login-content">
+            <div class="eyebrow">Welcome back!</div>
+            <h1>Good to have you here.</h1>
+            <p>Find your next opportunity. Keep your service story. Bring your organization together.</p>
+        </div>
+
+        <div class="login-form">
+            <h3>Log in to Gather.</h3>
+            <p>The same login takes you to your volunteer activity and your organization workspaces.</p>
+
+            <form action="{{ url_for('auth.login') }}" method="post">
+                <div class="form-group">
+                    <label for="input-email">Email</label>
+                    <input name="email"
+                           type="email"
+                           class="form-control"
+                           id="input-email"
+                           placeholder="Enter email"
+                           autocomplete="username"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="input-password">Password</label>
+                    <input name="password"
+                           type="password"
+                           class="form-control"
+                           id="input-password"
+                           placeholder="Enter password"
+                           autocomplete="current-password"
+                           required>
+                </div>
+
+                <button type="submit" id="login-btn" class="btn btn-primary">
+                    Log in
+                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                </button>
+            </form>
+
+            <div class="new-signup">
+                <p>New to Gather? <a href="{{ url_for('auth.signup') }}">Create an account</a></p>
+            </div>
+        </div>
+    </section>
+{% endblock %}

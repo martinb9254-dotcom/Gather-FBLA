@@ -1,0 +1,75 @@
+
+.signup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    padding: 45px;
+    margin: auto;
+    margin-top:50px;
+}
+
+.signup-form {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E5DC;
+    border-radius: 13px;
+    padding: 35px;
+}
+
+.signup-form h3 {
+    color: #193F36;
+    font-family: Manrope;
+    font-size: 27px;
+}
+
+.signup-form p {
+    font-size: 13px;
+    color: #6B756F;
+    font-size: DM Sans;
+}
+
+.signup-content h1 {
+    font-size: clamp(38px, 4.1vw, 56px);
+    color: #193F36;
+    font-family: Manrope;
+    font-weight: 700;
+}
+
+.signup-content p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.8;
+    color: #6B756F;
+}
+
+.signup-content .signup-benefit {
+    color:#193F36;
+    font-size: 13px;
+    padding-top: 10px;
+}
+
+.signup-content i {
+    color: #74835C;
+    font-size: 17px;
+    margin: auto;
+    padding-right: 5px;
+}
+
+.form-group label {
+    color: #30463F;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#signup-btn {
+    background-color: #193F36;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    width: 100%;
+    margin-top: 15px;
+}
+
+#signup-btn i {
+    padding-left: 10px;
+}

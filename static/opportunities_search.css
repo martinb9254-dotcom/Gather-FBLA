@@ -1,0 +1,289 @@
+
+.search-page {
+    width: 90%;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 54px 0 90px;
+}
+
+.page-intro {
+    margin-bottom: 27px;
+}
+
+.eyebrow {
+    color: #687b63;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.page-intro h1 {
+    margin: 12px 0 14px;
+    color: #193f36;
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(36px, 4vw, 48px);
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    line-height: 1.15;
+}
+
+.page-intro p {
+    margin: 0;
+    max-width: 610px;
+    color: #6b756f;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.opportunity-search {
+    max-width: 780px;
+    padding: 19px;
+    background: #fff;
+    border: 1px solid #e2e5dc;
+    border-radius: 16px;
+    box-shadow: 0 6px 24px #193f3607;
+}
+
+.opportunity-search > label {
+    display: block;
+    margin-bottom: 9px;
+    color: #193f36;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.search-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 16px;
+}
+
+.search-field {
+    display: flex;
+    align-items: center;
+    flex: 1 1 260px;
+    gap: 11px;
+    min-width: 0;
+    padding: 0 15px;
+    background: #faf9f5;
+    border: 1px solid #e2e5dc;
+    border-radius: 9px;
+}
+
+.search-field:focus-within {
+    border-color: #7b9764;
+    box-shadow: 0 0 0 3px #dfe9bf80;
+}
+
+.search-field i {
+    color: #687b63;
+    font-size: 19px;
+}
+
+.search-field input {
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    padding: 10px 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #193f36;
+    font-size: 14px;
+}
+
+.search-field input::placeholder {
+    color: #87928a;
+}
+
+.opportunity-search button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    min-height: 50px;
+    padding: 11px 24px;
+    background: #193f36;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.opportunity-search button:hover {
+    background: #2e574a;
+}
+
+.results {
+    margin-top: 43px;
+}
+
+.results-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 35px;
+    margin-bottom: 23px;
+    border-top: 1px solid #e2e5dc;
+}
+
+.results-heading h2 {
+    margin: 10px 0 0;
+    color: #193f36;
+    font-family: 'Manrope', sans-serif;
+    font-size: 23px;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+}
+
+.results-heading p {
+    margin: 8px 0 0;
+    color: #6b756f;
+    font-size: 12px;
+}
+
+.opportunity-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 22px;
+}
+
+.opportunity-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e2e5dc;
+    border-radius: 14px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.opportunity-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px #193f3614;
+}
+
+.opportunity-card[hidden],
+.empty-state[hidden] {
+    display: none !important;
+}
+
+.card-image {
+    position: relative;
+    height: 260px;
+    overflow: hidden;
+    background: #edf0e3;
+}
+
+.card-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.opportunity-card:hover .card-image img {
+    transform: scale(1.03);
+}
+
+.cause-tag {
+    position: absolute;
+    bottom: 14px;
+    left: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    background: #fff;
+    border-radius: 20px;
+    color: #193f36;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.opportunity-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 20px 21px 22px;
+}
+
+.organization-name {
+    color: #6b756f;
+    font-size: 11px;
+}
+
+.opportunity-content h3 {
+    margin: 9px 0 15px;
+    color: #193f36;
+    font-family: 'Manrope', sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: -0.035em;
+}
+
+.opportunity-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #526259;
+    font-size: 11px;
+    margin-bottom: 20px;
+}
+
+.opportunity-meta i {
+    margin-right: 7px;
+    color: #687b63;
+}
+
+.card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 17px;
+    border-top: 1px solid #e2e5dc;
+}
+
+.spots {
+    color: #5d7459;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.details-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #193f36;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.details-link:hover {
+    color: #cd4c32;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    padding: 35px;
+    background: #fff;
+    border: 1px solid #e2e5dc;
+    border-radius: 14px;
+    color: #6b756f;
+    font-size: 13px;
+    text-align: center;
+}

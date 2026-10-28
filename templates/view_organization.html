@@ -1,0 +1,187 @@
+{% extends "base_app.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='view_organization.css') }}">
+<title>{{ organization.name }}</title>
+{% endblock %}
+
+{% block content %}
+<main class="org-profile-page">
+    <a class="org-back-link" href="{{ url_for('organizations.search_organizations') }}">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+        All organizations
+    </a>
+
+    {% for message in get_flashed_messages() %}
+    <div class="org-flash" role="status">{{ message }}</div>
+    {% endfor %}
+
+    <section class="org-profile-hero" aria-labelledby="org-profile-name">
+        <div class="org-profile-image">
+            {% if organization.image_filename %}
+            <img src="{{ url_for('static', filename='uploads/' ~ organization.image_filename) }}"
+                 alt="{{ organization.name }}">
+            {% else %}
+            <div class="org-profile-placeholder" aria-hidden="true">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="org-profile-hero-content">
+            <div class="org-eyebrow">Organization profile</div>
+
+            <span class="org-profile-cause">
+                {{ organization.cause }}
+            </span>
+
+            <h1 id="org-profile-name">{{ organization.name }}</h1>
+
+            <p>{{ organization.description }}</p>
+
+            <div class="org-profile-location">
+                <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                {{ organization.location }}
+            </div>
+        </div>
+    </section>
+
+    <div class="org-profile-columns">
+        <div class="org-profile-main">
+            <section class="org-detail-card" aria-labelledby="about-organization">
+                <div class="org-eyebrow">The mission</div>
+                <h2 id="about-organization">A little more about us.</h2>
+                <p class="org-description">{{ organization.description }}</p>
+            </section>
+
+            <section class="org-detail-card" aria-labelledby="organization-opportunities">
+                <div class="org-eyebrow">Ways to get involved</div>
+                <h2 id="organization-opportunities">Current opportunities</h2>
+
+                {% if open_opportunities %}
+                <div class="org-opportunity-list">
+                    {% for opportunity in open_opportunities %}
+                    <a class="org-opportunity-row"
+                       href="{{ url_for('opportunities.view_opportunity', opportunity_id=opportunity.id) }}">
+                        <span class="org-opportunity-icon">
+                            <i class="bi bi-heart" aria-hidden="true"></i>
+                        </span>
+
+                        <span class="org-opportunity-info">
+                            <strong>{{ opportunity.title }}</strong>
+                            <small>
+                                {{ opportunity.event_date.strftime('%b %d, %Y') }}
+                                · {{ opportunity.location }}
+                            </small>
+                        </span>
+
+                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="org-muted">
+                    There are no open opportunities right now. Check back soon.
+                </p>
+                {% endif %}
+            </section>
+        </div>
+
+        <aside class="org-profile-aside">
+            <section class="org-detail-card" aria-labelledby="organization-at-a-glance">
+                <div class="org-eyebrow">At a glance</div>
+                <h2 id="organization-at-a-glance">The details</h2>
+
+                <div class="org-fact">
+                    <span class="org-fact-icon">
+                        <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                    </span>
+                    <div>
+                        <small>Location</small>
+                        <strong>{{ organization.location }}</strong>
+                    </div>
+                </div>
+
+                <div class="org-fact">
+                    <span class="org-fact-icon">
+                        <i class="bi bi-heart" aria-hidden="true"></i>
+                    </span>
+                    <div>
+                        <small>Primary cause</small>
+                        <strong>{{ organization.cause }}</strong>
+                    </div>
+                </div>
+
+                <div class="org-fact">
+                    <span class="org-fact-icon">
+                        <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                    </span>
+                    <div>
+                        <small>Opportunities</small>
+                        <strong>{{ opportunity_count }}</strong>
+                    </div>
+                </div>
+
+                <div class="org-fact">
+                    <span class="org-fact-icon">
+                        <i class="bi bi-envelope" aria-hidden="true"></i>
+                    </span>
+                    <div>
+                        <small>Contact</small>
+                        <a href="mailto:{{ organization.email }}">
+                            {{ organization.email }}
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="org-detail-card org-admin-card" aria-labelledby="org-admin-title">
+                <span class="org-admin-icon">
+                    <i class="bi bi-people" aria-hidden="true"></i>
+                </span>
+
+                <h2 id="org-admin-title">Help behind the scenes.</h2>
+
+                <p>
+                    Interested in helping this organization coordinate volunteers?
+                    Apply for an admin role.
+                </p>
+
+                {% if membership %}
+                <div class="org-request-state">
+                    <i class="bi bi-shield-check" aria-hidden="true"></i>
+                    Your role: {{ membership.role|capitalize }}
+                </div>
+
+                {% elif admin_request and admin_request.status == 'pending' %}
+                <div class="org-request-state">
+                    <i class="bi bi-clock" aria-hidden="true"></i>
+                    Application pending review
+                </div>
+
+                {% elif admin_request and admin_request.status == 'approved' %}
+                <div class="org-request-state">
+                    <i class="bi bi-check-circle" aria-hidden="true"></i>
+                    Application approved
+                </div>
+
+                {% else %}
+                    {% if admin_request and admin_request.status == 'denied' %}
+                    <p class="org-request-note">
+                        Your previous application was not approved. You can apply again.
+                    </p>
+                    {% endif %}
+
+                    <form action="{{ url_for('organizations.apply_to_be_admin', organization_id=organization.id) }}"
+                          method="post">
+                        <button class="org-apply-btn" type="submit">
+                            Apply to be an admin
+                            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                        </button>
+                    </form>
+                {% endif %}
+            </section>
+        </aside>
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends "base_public.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='howitworks.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" defer></script>
+    <title>How it works</title>
+{% endblock %}
+
+{% block content %}
+    <section class="page-intro">
+        <div class="eyebrow">A simpler way to show up</div>
+
+        <h1>Find your place. <br>
+            Make your time count.
+        </h1>
+
+        <p>Find an opportunity, follow your signup, and keep track of your service hours. Organizations can share opportunities and manage volunteers with the same Gather account.</p>
+    </section>
+
+    <section class="how-account-primer">
+        <span class="people-icon">
+            <i class="bi bi-people" aria-hidden="true"></i>
+        </span>
+
+        <div class="how-account-primer-content">
+            <h2>One account. Every way you help.</h2>
+            <p>
+                Use one account to volunteer and manage organizations. Create an organization to become its owner, or apply to help manage an existing one as an admin. An owner reviews admin applications, and your volunteer activity stays on your Dashboard.
+            </p>
+        </div>
+
+        <a href="{{ url_for('auth.signup') }}"
+           class="signup-btn text-decoration-none d-inline-flex align-items-center justify-content-center">
+            Create an account
+            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </a>
+    </section>
+
+    <section class="how-guide">
+        <div class="how-guide-heading">
+            <div>
+                <div class="eyebrow">Choose your next step</div>
+                <h2 class="how-guide-title">A little time. A clear path.</h2>
+            </div>
+
+            <div class="how-guide-switch nav nav-pills" role="tablist">
+                <button class="nav-link active"
+                        id="volunteer-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#volunteer-guide"
+                        type="button"
+                        role="tab"
+                        aria-controls="volunteer-guide"
+                        aria-selected="true">
+                    <i class="bi bi-heart me-2" aria-hidden="true"></i>
+                    For volunteers
+                </button>
+
+                <button class="nav-link"
+                        id="organization-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#organization-guide"
+                        type="button"
+                        role="tab"
+                        aria-controls="organization-guide"
+                        aria-selected="false">
+                    <i class="bi bi-buildings me-2" aria-hidden="true"></i>
+                    For organizations
+                </button>
+            </div>
+        </div>
+
+        <div class="tab-content">
+            <div class="tab-pane"
+                 id="organization-guide"
+                 role="tabpanel"
+                 aria-labelledby="organization-tab">
+                <div class="how-practical-steps">
+                    <div class="big-step">
+                        <div class="step-num">01</div>
+                        <h3>Give your mission a home.</h3>
+                        <p>From Manage organizations, create a profile with your name, cause, contact email, location, and a short description. You can add an image too.</p>
+                        <ul class="how-checklist">
+                            <li>You become the owner of the organization you create.</li>
+                            <li>Volunteers can see your profile and the opportunities you share.</li>
+                        </ul>
+                    </div>
+
+                    <div class="big-step">
+                        <div class="step-num">02</div>
+                        <h3>Invite your community in.</h3>
+                        <p>Open your workspace to post an opportunity. Add the date, time, location, number of spots, what volunteers will do, and what they should bring.</p>
+                        <ul class="how-checklist">
+                            <li>People can find your listing through Search opportunities or your organization profile.</li>
+                            <li>New signups appear for review; full opportunities can have a waitlist.</li>
+                        </ul>
+                    </div>
+
+                    <div class="big-step">
+                        <div class="step-num">03</div>
+                        <h3>Keep the good organized.</h3>
+                        <p>Approve or deny volunteer requests, manage your roster, and review service records after the activity.</p>
+                        <ul class="how-checklist">
+                            <li>People can apply to be an admin from your profile; the owner approves or denies each request.</li>
+                            <li>Use Manage organizations to open each team’s workspace.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane active"
+                 id="volunteer-guide"
+                 role="tabpanel"
+                 aria-labelledby="volunteer-tab"
+                 tabindex="0">
+                <div class="how-practical-steps">
+                    <div class="big-step">
+                        <div class="step-num">01</div>
+                        <h3>Find a cause that fits.</h3>
+                        <p>Search by a cause, activity, organization, or location. Browse the cards to find something that fits your day.</p>
+                        <ul class="how-checklist">
+                            <li>Open the listing to check the time, location, age requirement, and what to bring.</li>
+                            <li>Visit the organization’s profile to learn who you’ll be helping.</li>
+                        </ul>
+                    </div>
+
+                    <div class="big-step">
+                        <div class="step-num">02</div>
+                        <h3>Make a little room.</h3>
+                        <p>Save an opportunity for later, or sign up when you’re ready. An owner or admin reviews requests when spots are available.</p>
+                        <ul class="how-checklist">
+                            <li>Follow your request under Dashboard → Upcoming, and cancel it there if plans change.</li>
+                            <li>If the opportunity is full, your signup starts on the waitlist.</li>
+                        </ul>
+                    </div>
+
+                    <div class="big-step">
+                        <div class="step-num">03</div>
+                        <h3>Show up. See your impact.</h3>
+                        <p>Once your signup is approved, read the meeting details and show up ready to help. Gather adds a pending service record for the scheduled time.</p>
+                        <ul class="how-checklist">
+                            <li>You can see the pending record under Dashboard → Service hours.</li>
+                            <li>An owner or admin reviews the record before any hours become verified.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-status-section">
+        <div class="how-info-heading">
+            <div class="eyebrow">Before you put it on your calendar</div>
+            <h2>Know where you stand.</h2>
+            <p>Your signup status appears under Dashboard → Upcoming.</p>
+        </div>
+
+        <div class="how-status-grid">
+            <div class="how-status-grid-item">
+                <span id="confirm-span">
+                    <i class="bi bi-check2 me-1" aria-hidden="true"></i>
+                    Approved
+                </span>
+                <h3>You’re on the list.</h3>
+                <p>An owner or admin approved your request, and you have a place. Check the meeting details before you go.</p>
+            </div>
+
+            <div class="how-status-grid-item">
+                <span id="waitlist-span">
+                    <i class="bi bi-clock me-1" aria-hidden="true"></i>
+                    Waitlisted
+                </span>
+                <h3>You’re waiting for a place.</h3>
+                <p>The available places are filled. An owner or admin can approve your request if a place opens, or you can cancel it.</p>
+            </div>
+
+            <div class="how-status-grid-item">
+                <span id="pending-span">
+                    <i class="bi bi-shield-check me-1" aria-hidden="true"></i>
+                    Pending review
+                </span>
+                <h3>Your request is in.</h3>
+                <p>The organization has your signup. An owner or admin can approve or deny it after reviewing the roster.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-hours">
+        <div class="how-info-heading">
+            <div class="eyebrow">Make your time count</div>
+            <h2 class="how-hours-title">How service hours become verified.</h2>
+            <p>An approved signup creates a pending record for the scheduled time. Those hours count toward your verified total only after the organization reviews them.</p>
+        </div>
+
+        <div class="how-hours-grid">
+            <div class="how-hours-grid-item">
+                <span class="how-small-number">01</span>
+                <h3>A record is created.</h3>
+                <p>When your signup is approved, Gather creates an unverified record using the opportunity’s date and scheduled time.</p>
+            </div>
+
+            <div class="how-hours-grid-item">
+                <span class="how-small-number">02</span>
+                <h3>The organization reviews it.</h3>
+                <p>After the activity, an owner or admin checks the record in the organization workspace and approves or denies it.</p>
+            </div>
+
+            <div class="how-hours-grid-item">
+                <span class="how-small-number">03</span>
+                <h3>See the verified total.</h3>
+                <p>Approved hours appear as Verified on your Dashboard and are added to your total. The organization’s verified total updates too.</p>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base_public.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='signup.css') }}">
+    <title>Signup</title>
+{% endblock %}
+
+{% block content %}
+<section class="signup">
+    <div class="signup-content">
+        <div class="eyebrow">One account. All your good.</div>
+        <h1>Make room for something good.</h1>
+        <p>Find your next opportunity. Keep your service story. Bring your organization together.</p>
+
+        <div class="signup-benefit">
+            <i class="bi bi-heart" aria-hidden="true"></i>
+            Volunteer with any organization.
+        </div>
+        <div class="signup-benefit">
+            <i class="bi bi-buildings" aria-hidden="true"></i>
+            Manage the organizations you belong to.
+        </div>
+        <div class="signup-benefit">
+            <i class="bi bi-people" aria-hidden="true"></i>
+            Move between both, with one account.
+        </div>
+    </div>
+
+    <div class="signup-form">
+        <h3>Start your Gather story.</h3>
+        <p>Everyone starts with a volunteer profile. You can create an organization whenever you’re ready.</p>
+
+        <form action="{{ url_for('auth.signup') }}" method="post">
+            <div class="form-group">
+                <label for="input-email">Email</label>
+                <input name="email"
+                       type="email"
+                       class="form-control"
+                       id="input-email"
+                       placeholder="john@example.org"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="input-password">Password</label>
+                <input name="password"
+                       type="password"
+                       class="form-control"
+                       id="input-password"
+                       placeholder="Create password"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="input-firstname">First Name</label>
+                <input name="firstname"
+                       type="text"
+                       class="form-control"
+                       id="input-firstname"
+                       placeholder="e.g. John"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="input-lastname">Last Name</label>
+                <input name="lastname"
+                       type="text"
+                       class="form-control"
+                       id="input-lastname"
+                       placeholder="e.g. Doe"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="input-phonenumber">Phone Number</label>
+                <input name="phonenumber"
+                       type="tel"
+                       class="form-control"
+                       id="input-phonenumber"
+                       placeholder="(123) 456-789">
+            </div>
+
+            <div class="form-group">
+                <label for="input-age">Age</label>
+                <input name="age"
+                       type="number"
+                       min="1"
+                       class="form-control"
+                       id="input-age"
+                       placeholder="e.g. 22"
+                       required>
+            </div>
+
+            <button type="submit" id="signup-btn" class="btn btn-primary">
+                Sign up
+                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </button>
+        </form>
+    </div>
+</section>
+{% endblock %}

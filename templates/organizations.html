@@ -1,0 +1,207 @@
+{% extends "base_app.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='organizations.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='organizations_modal.css') }}">
+    <title>Organizations</title>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <section class="organization-header">
+            <div>
+                <div class="eyebrow">Your missions, in one place</div>
+                <h5>Good grows together.</h5>
+                <p>
+                    Keep volunteering. Bring your teams together.
+                    It’s all part of your account.
+                </p>
+            </div>
+
+            <div>
+                <button type="button"
+                        class="create-organization-btn"
+                        data-bs-toggle="modal"
+                        data-bs-target="#createOrganizationModal">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                    Create an organization
+                </button>
+            </div>
+        </section>
+
+        <p id="organization-feedback"
+           class="organization-feedback"
+           role="status"
+           aria-live="polite"
+           hidden></p>
+
+        <section class="cards organizations-workspace"
+                 aria-label="Your organizations">
+
+            {% for organization, data in organizations_dict.items() %}
+            <article class="organization-card">
+                <div class="organization-card-top">
+                    <span class="organization-avatar">
+                        {{ organization.name.split()[0][0] | upper }}{{ organization.name.split()[-1][0] | upper if organization.name.split() | length > 1 else '' }}
+                    </span>
+                    <span class="organization-role">
+                        {{ data[0] | capitalize }}
+                    </span>
+                </div>
+
+                <h3>{{ organization.name }}</h3>
+
+                <p class="organization-description">
+                    {{ organization.cause }}
+                </p>
+
+                <div class="organization-location">
+                    <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                    {{ organization.location }}
+                </div>
+
+                <div class="organization-counts">
+                    <span><strong>{{ data[2] }}</strong> opportunities</span>
+                    <span>·</span>
+                    <span><strong>{{ data[1] }}</strong> team members</span>
+                </div>
+
+                <a href="{{ url_for('organizations.organization_details', organization_id=organization.id) }}"
+                   class="organization-open">
+                    Open workspace
+                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                </a>
+
+                <a href="{{ url_for('organizations.view_organization', organization_id=organization.id) }}"
+                   class="organization-profile">
+                    View organization profile
+                </a>
+            </article>
+            {% endfor %}
+
+        </section>
+    </div>
+
+    <div class="modal fade create-organization-modal"
+         id="createOrganizationModal"
+         tabindex="-1"
+         aria-labelledby="createOrganizationTitle"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <form id="create-organization-form"
+                  class="modal-content"
+                  method="post"
+                  action="{{ url_for('organizations.manage_organizations') }}"
+                  enctype="multipart/form-data">
+
+                <div class="modal-header">
+                    <div>
+                        <h2 class="modal-title" id="createOrganizationTitle">
+                            Create an organization
+                        </h2>
+                        <p class="modal-intro">
+                            Start with the basics. You can add opportunities
+                            and teammates later.
+                        </p>
+                    </div>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="organization-name">Organization name</label>
+                        <input class="form-control"
+                               id="organization-name"
+                               name="name"
+                               maxlength="80"
+                               placeholder="e.g. Neighborhood Garden"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="organization-location">Location</label>
+                        <input class="form-control"
+                               id="organization-location"
+                               name="location"
+                               maxlength="100"
+                               placeholder="e.g. Brooklyn, NY"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="organization-email">Organization contact email</label>
+                        <input class="form-control"
+                               id="organization-email"
+                               name="contact_email"
+                               type="email"
+                               maxlength="254"
+                               autocomplete="email"
+                               placeholder="e.g. hello@yourorganization.org"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="organization-primary-cause">Primary cause</label>
+                        <input class="form-control"
+                               id="organization-primary-cause"
+                               name="primary_cause"
+                               type="text"
+                               list="organization-cause-suggestions"
+                               maxlength="60"
+                               placeholder="e.g. Food &amp; essentials"
+                               required>
+
+                        <datalist id="organization-cause-suggestions">
+                            <option value="Food &amp; essentials">
+                            <option value="Community">
+                            <option value="Education">
+                            <option value="Environment">
+                            <option value="Health &amp; wellness">
+                        </datalist>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="organization-description">
+                            What does your organization do?
+                        </label>
+                        <textarea class="form-control"
+                                  id="organization-description"
+                                  name="description"
+                                  rows="3"
+                                  maxlength="300"
+                                  placeholder="A short description people will see on your organization card."
+                                  required></textarea>
+                    </div>
+
+                    <div>
+                        <label for="organization-image">
+                            Organization image (optional)
+                        </label>
+                        <input class="form-control"
+                               id="organization-image"
+                               name="image"
+                               type="file"
+                               accept="image/png,image/jpeg,image/webp"
+                               aria-describedby="organization-image-help">
+                        <small class="form-text" id="organization-image-help">
+                            PNG, JPG, or WEBP. Leave blank to use a default image.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="modal-create">
+                        Create organization
+                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+{% endblock %}

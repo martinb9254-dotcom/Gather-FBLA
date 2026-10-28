@@ -1,0 +1,35 @@
+{% extends "base_public.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+<title>Home</title>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="hero-content">
+        <div class="eyebrow">A little time. A lasting difference.</div>
+
+        <h1>
+            Good things happen <br>
+            when we <em>show up.</em>
+        </h1>
+
+        <p>
+            Find your people. Support a cause you care about.
+            Make a little room in your day for something good.
+        </p>
+
+        <a href="{{ url_for('auth.signup') }}" class="login-btn">
+            Help Out
+            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </a>
+    </div>
+
+    <div class="hero-img-div">
+        <img class="hero-img"
+             src="{{ url_for('static', filename='volunteers-homepage-img.png') }}"
+             alt="Volunteers helping their community">
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base_app.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='edit_profile.css') }}">
+<title>Edit profile | Gather</title>
+{% endblock %}
+
+{% block content %}
+<main class="profile-page">
+    <div class="profile-heading">
+        <div class="profile-eyebrow">Your account</div>
+        <h1>Edit your profile.</h1>
+        <p>Keep your details up to date for the organizations you volunteer with.</p>
+    </div>
+
+    <form class="profile-card"
+          method="post"
+          action="{{ url_for('auth.edit_profile') }}">
+
+        <div class="profile-field">
+            <label for="profile-firstname">First name</label>
+            <input class="form-control"
+                   id="profile-firstname"
+                   name="firstname"
+                   type="text"
+                   maxlength="30"
+                   value="{{ values.firstname }}"
+                   required>
+        </div>
+
+        <div class="profile-field">
+            <label for="profile-lastname">Last name</label>
+            <input class="form-control"
+                   id="profile-lastname"
+                   name="lastname"
+                   type="text"
+                   maxlength="30"
+                   value="{{ values.lastname }}"
+                   required>
+        </div>
+
+        <div class="profile-field">
+            <label>Email</label>
+            <p class="profile-email">{{ user.email }}</p>
+        </div>
+
+        <div class="profile-field">
+            <label for="profile-phone">Phone number <span>(optional)</span></label>
+            <input class="form-control"
+                   id="profile-phone"
+                   name="phonenumber"
+                   type="tel"
+                   maxlength="30"
+                   value="{{ values.phonenumber }}"
+                   placeholder="(123) 456-7890">
+        </div>
+
+        <div class="profile-field">
+            <label for="profile-age">Age</label>
+            <input class="form-control"
+                   id="profile-age"
+                   name="age"
+                   type="number"
+                   min="1"
+                   max="120"
+                   value="{{ values.age }}"
+                   required>
+        </div>
+
+        <div class="profile-actions">
+            <a href="{{ url_for('dashboard.dashboard') }}" class="profile-cancel">
+                Cancel
+            </a>
+
+            <button type="submit" class="profile-save">
+                Save changes
+                <i class="bi bi-check-lg" aria-hidden="true"></i>
+            </button>
+        </div>
+    </form>
+</main>
+{% endblock %}

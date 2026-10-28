@@ -1,0 +1,119 @@
+.profile-page {
+    width: 90%;
+    max-width: 720px;
+    margin: 60px auto 90px;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.profile-eyebrow {
+    color: #687b63;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.profile-heading h1 {
+    margin: 10px 0 12px;
+    color: #193f36;
+    font-family: 'Manrope', sans-serif;
+    font-size: 38px;
+    font-weight: 700;
+    letter-spacing: -0.045em;
+}
+
+.profile-heading p {
+    margin: 0 0 28px;
+    color: #6b756f;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.profile-card {
+    padding: 32px;
+    border: 1px solid #e2e5dc;
+    border-radius: 18px;
+    background: #ffffff;
+}
+
+.profile-field {
+    margin-bottom: 22px;
+}
+
+.profile-field label {
+    display: block;
+    margin-bottom: 8px;
+    color: #193f36;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.profile-field label span {
+    color: #6b756f;
+    font-weight: 400;
+}
+
+.profile-field .form-control {
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #d9dfd4;
+    border-radius: 9px;
+    color: #193f36;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+}
+
+.profile-field .form-control:focus {
+    border-color: #7b9764;
+    box-shadow: 0 0 0 3px #dfe9bf80;
+}
+
+.profile-email {
+    margin: 0;
+    padding: 11px 12px;
+    border: 1px solid #e2e5dc;
+    border-radius: 9px;
+    background: #f6f7f2;
+    color: #6b756f;
+    font-size: 14px;
+}
+
+.profile-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.profile-cancel {
+    color: #526259;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.profile-cancel:hover {
+    color: #193f36;
+    text-decoration: underline;
+}
+
+.profile-save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 9px;
+    background: #193f36;
+    color: #ffffff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.profile-save:hover {
+    background: #2e574a;
+}

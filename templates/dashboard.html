@@ -1,0 +1,404 @@
+{% extends "base_app.html" %}
+{% block head %}
+    <link rel="stylesheet" href="{{url_for('static', filename='dashboard.css')}}">
+    <title>Home</title>
+{% endblock %}
+    
+{% block content %}
+    <div class="container">
+        <section class="dashboard-heading">
+            <div class="eyebrow">
+                Welcome back, {{user.firstname}}
+            </div>
+            <h1>Dashboard</h1>
+            <p>Your upcoming activities, saved opportunities, and service hours.</p>
+        </section>
+
+        <section class="dashboard-stats">
+            <div class="stat-div">
+                <p>VERIFIED SERVICE</p>
+                <h3>{{verified_hours}}</h3>
+                
+            </div>
+            <div class="stat-div">
+                <p>UPCOMING COMMITMENTS</p>
+                <h3>{{upcoming_events | length}}</h3>
+                
+            </div>
+            <div class="stat-div">
+                <p>SAVED OPPORTUNITIES</p>
+                <h3>{{saved_entries | length}}</h3>
+                
+            </div>
+        </section>
+
+    <div class="nav nav-tabs dashboard-tabs" role="tablist" aria-label="Dashboard sections">
+
+        <button class="nav-link active"
+                id="upcoming-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#upcoming"
+                type="button" role="tab"
+                aria-controls="upcoming"
+                aria-selected="true">
+            Upcoming
+        </button>
+
+        <button class="nav-link"
+                id="saved-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#saved"
+                type="button" role="tab"
+                aria-controls="saved"
+                aria-selected="false">
+            Saved opportunities
+        </button>
+
+        <button class="nav-link"
+                id="hours-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#hours"
+                type="button" role="tab"
+                aria-controls="hours"
+                aria-selected="false">
+            Service hours
+        </button>
+    </div>
+
+    <div class="tab-content">
+        <div class="tab-pane show active"
+            id="upcoming" role="tabpanel"
+            aria-labelledby="upcoming-tab" tabindex="0">
+            <div class="upcoming">
+                <div class="upcoming-header">
+                    <div id="upcoming-header-left">
+                        <h6>Coming up next</h6>
+                        <p>Your activities and requests, with the details you need.</p>
+                    </div>
+                    <div id="upcoming-header-right">
+                        <span>{{upcoming_event | length}} activities</span>
+                    </div>
+                </div>
+
+                <div class="activities">
+                    {% for signup in upcoming_events %}
+                    <div class="upcoming-item">
+                        <div class="upcoming-date">
+                            <span>{{signup.opportunity.event_date.strftime('%a')}}</span>
+                            <strong>{{ signup.opportunity.event_date.strftime('%b %d') }}</strong>
+                        </div>
+                    
+                        <div class="upcoming-details">
+                            <a>{{signup.opportunity.organization_name}}</a>
+                            <h3>{{signup.opportunity.title}}</h3>
+                            <p>
+                            {{signup.opportunity.start_time.strftime('%I:%M %p')}} - {{signup.opportunity.end_time.strftime('%I:%M %p') }} {{signup.opportunity.timezone}}
+                            <span>·</span>
+                            {{signup.opportunity.location}}
+                            </p>
+
+                            {% if signup.status == "pending" %}
+                                <span class="badge signup-status pending">
+                                    <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+                                    Screening pending
+                                </span>
+                            {% elif signup.status == "approved" %}
+                                <span class="badge signup-status approved">
+                                    <i class="bi bi-check-circle" aria-hidden="true"></i>
+                                    Approved
+                                </span>
+                            {% elif signup.status == "waitlisted" %}
+                                <span class="badge signup-status waitlisted">
+                                    <i class="bi bi-clock-history" aria-hidden="true"></i>
+                                    Waitlisted
+                                </span>
+                            {% elif signup.status == "denied" %}
+                                <span class="badge signup-status denied">
+                                    <i class="bi bi-x-circle" aria-hidden="true"></i>
+                                    Not approved
+                                </span>
+                            {% elif signup.status == "cancelled" %}
+                                <span class="badge signup-status cancelled">
+                                    <i class="bi bi-dash-circle" aria-hidden="true"></i>
+                                    Cancelled
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="upcoming-actions">
+                            <a href="{{ url_for('opportunities.view_opportunity', opportunity_id=signup.opportunity_id) }}" class="btn btn-outline btn-small">
+                                View details
+                                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                            </a>
+
+                            {% if signup.status in ("pending", "approved", "waitlisted") %}
+                            <form method="post"
+                                action="{{ url_for('opportunities.cancel_signup', signup_id=signup.id) }}"
+                                class="m-0">
+                                <button type="submit" class="upcoming-cancel">
+                                    Cancel signup
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="tab-pane"
+            id="saved"
+            role="tabpanel"
+            aria-labelledby="saved-tab"
+            tabindex="0">
+
+            <section class="saved-opportunities">
+                <div class="saved-heading">
+                    <div>
+                        <h2>A little inspiration for later.</h2>
+                        <p>Keep the opportunities you like here until you’re ready to sign up.</p>
+                    </div>
+                    <span class="saved-count">{{ saved_entries | length }} saved</span>
+                </div>
+
+                {% if saved_entries %}
+                <div class="saved-grid">
+                    {% for saved in saved_entries %}
+                        {% set opportunity = saved.opportunity %}
+                        {% set approved_count = opportunity.signups
+                            | selectattr('status', 'equalto', 'approved')
+                            | list
+                            | length %}
+                        {% set spots_left = opportunity.volunteer_requirement - approved_count %}
+
+                        <article class="saved-card">
+                            <div class="saved-image">
+                                <img src="{{ url_for('static', filename='uploads/' ~ opportunity.image_filename) if opportunity.image_filename else url_for('static', filename='default-opportunity.png') }}"
+                                    alt="{{ opportunity.title }}">
+                                <span class="saved-cause">
+                                    <i class="bi bi-tag" aria-hidden="true"></i>
+                                    {{ opportunity.cause }}
+                                </span>
+                            </div>
+
+                            <div class="saved-card-body">
+                                <a class="saved-organization"
+                                href="{{ url_for('organizations.view_organization', organization_id=opportunity.organization_id) }}">
+                                    {{ opportunity.organization_name }}
+                                </a>
+
+                                <h3>
+                                    <a href="{{ url_for('opportunities.view_opportunity', opportunity_id=opportunity.id) }}">
+                                        {{ opportunity.title }}
+                                    </a>
+                                </h3>
+
+                                <p class="saved-meta">
+                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                    {{ opportunity.event_date.strftime('%a, %b %d') }}
+                                </p>
+
+                                <p class="saved-meta">
+                                    <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                                    {{ opportunity.location }}
+                                </p>
+
+                                <div class="saved-card-footer">
+                                    {% if opportunity.status != "open" %}
+                                        <span class="saved-availability">Closed</span>
+                                    {% elif spots_left > 0 %}
+                                        <span class="saved-availability">
+                                            {{ spots_left }} {{ "spot" if spots_left == 1 else "spots" }} open
+                                        </span>
+                                    {% else %}
+                                        <span class="saved-availability">Full</span>
+                                    {% endif %}
+
+                                    <a href="{{ url_for('opportunities.view_opportunity', opportunity_id=opportunity.id) }}">
+                                        View details
+                                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="saved-empty">
+                    <span class="saved-empty-icon">
+                        <i class="bi bi-bookmark-heart" aria-hidden="true"></i>
+                    </span>
+                    <h3>Nothing saved yet.</h3>
+                    <p>Find an opportunity you like and keep it here for later.</p>
+                    <a href="{{ url_for('opportunities.search_opportunities') }}">
+                        Explore opportunities
+                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </section>
+        </div>
+
+        <div class="tab-pane"
+            id="hours" role="tabpanel"
+            aria-labelledby="hours-tab" tabindex="0">
+            <section class="service-hours">
+                <div class="hours-heading">
+                    <div>
+                        <h2>Service hour record</h2>
+                        <p>A simple record of where you helped and the time you gave.</p>
+                    </div>
+
+                </div>
+
+                <div class="hours-summary">
+                    <span><strong>{{verified_hours}}</strong> verified hours</span>
+                    <span><strong>{{pending_hours}}</strong> hours awaiting review</span>
+                </div>
+
+                <div class="hours-table-wrap">
+                    <table class="hours-table">
+                        <caption class="visually-hidden">
+                            Your service hour records
+                        </caption>
+
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Organization</th>
+                                <th scope="col">Activity</th>
+                                <th scope="col" class="hours-number">Hours</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for hour in hours %}
+                            <tr>
+                                <td class="hours-date">
+                                    {{ hour.event_date.strftime('%b %d, %Y') }}
+                                </td>
+
+                                <td>{{ hour.organization_name }}</td>
+
+                                <td>{{ hour.description or '—' }}</td>
+
+                                <td class="hours-number">
+                                    {{ hour.hours.normalize() }}
+                                </td>
+
+                                <td>
+                                    {% if hour.status | lower == "verified" %}
+                                        <span class="hours-status verified">
+                                            <i class="bi bi-check-circle" aria-hidden="true"></i>
+                                            Verified
+                                        </span>
+                                    {% else %}
+                                        <span class="hours-status pending">
+                                            <i class="bi bi-clock" aria-hidden="true"></i>
+                                            Pending review
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+
+            
+            </section>
+        </div>
+    </div>
+
+    </div>
+
+    <script>
+    const opportunityForm = document.getElementById('create-opportunity-form');
+    const opportunityModal = document.getElementById('createOpportunityModal');
+    const opportunityEndTime = document.getElementById('new-opportunity-end');
+
+    opportunityEndTime.addEventListener('input', () => {
+        opportunityEndTime.setCustomValidity('');
+    });
+
+    opportunityModal.addEventListener('hidden.bs.modal', () => {
+        opportunityForm.reset();
+        opportunityEndTime.setCustomValidity('');
+    });
+
+    opportunityForm.addEventListener('submit', event => {
+        event.preventDefault();
+
+        const formData = new FormData(opportunityForm);
+        const startTime = String(formData.get('start_time'));
+        const endTime = String(formData.get('end_time'));
+
+        if (endTime <= startTime) {
+            opportunityEndTime.setCustomValidity(
+                'Choose a time after the start time.'
+            );
+            opportunityEndTime.reportValidity();
+            return;
+        }
+
+        const row = document.createElement('tr');
+
+        const opportunityCell = document.createElement('td');
+        const name = document.createElement('strong');
+        const location = document.createElement('small');
+
+        name.textContent = String(formData.get('title')).trim();
+        location.textContent = String(formData.get('location')).trim();
+        opportunityCell.append(name, location);
+
+        const dateCell = document.createElement('td');
+        const date = new Date(String(formData.get('date')) + 'T12:00:00');
+
+        dateCell.textContent = new Intl.DateTimeFormat('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        }).format(date);
+
+        const capacityCell = document.createElement('td');
+        capacityCell.textContent = '0 / ' + String(formData.get('capacity'));
+
+        const actionsCell = document.createElement('td');
+        actionsCell.innerHTML =
+            '<div class="opportunity-actions">' +
+                '<div class="opportunity-action-buttons">' +
+                    '<button type="button" class="opportunity-edit">Edit</button>' +
+                    '<button type="button" class="opportunity-delete">Delete</button>' +
+                '</div>' +
+                '<a href="#" class="opportunity-view">' +
+                    'View <i class="bi bi-arrow-right" aria-hidden="true"></i>' +
+                '</a>' +
+            '</div>';
+
+        row.append(opportunityCell, dateCell, capacityCell, actionsCell);
+
+        const opportunityList = document.getElementById('opportunity-list');
+        opportunityList.prepend(row);
+
+        const overviewCount = document.querySelector(
+            '#overview-panel .stats .stat strong'
+        );
+
+        if (overviewCount) {
+            overviewCount.textContent = opportunityList.rows.length;
+        }
+
+        bootstrap.Modal.getOrCreateInstance(opportunityModal).hide();
+        opportunityForm.reset();
+
+        const feedback = document.getElementById('create-opportunity-feedback');
+        feedback.textContent = 'Opportunity added to this preview.';
+        feedback.hidden = false;
+    });
+    </script>
+{% endblock %}

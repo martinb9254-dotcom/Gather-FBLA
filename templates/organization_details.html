@@ -1,0 +1,1210 @@
+{% extends "base_app.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='organization_details.css') }}">
+<title>Organization Details</title>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-heading">
+        <div>
+            <div class="eyebrow">Make room for more good</div>
+            <h1>{{ organization.name }}</h1>
+            <p>
+                <span class="badge organization-role">{{ membership.role | capitalize }}</span>
+                <span class="workspace-caption">Your role in this organization</span>
+            </p>
+        </div>
+    </div>
+
+    <div class="dashboard-layout">
+        <aside class="workspace-nav" aria-label="Organization workspace">
+            <div class="org-line">
+                <span class="org-avatar">
+                    {{ organization.name.split()[0][0] | upper }}{{ organization.name.split()[-1][0] | upper if organization.name.split() | length > 1 else '' }}
+                </span>
+                <div>
+                    <strong>{{ organization.name }}</strong>
+                    <span>{{ membership.role | capitalize }} workspace</span>
+                </div>
+            </div>
+
+            <div class="nav nav-pills flex-column"
+                 role="tablist"
+                 aria-orientation="vertical">
+                <button class="nav-link active"
+                        id="overview-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#overview-panel"
+                        type="button"
+                        role="tab"
+                        aria-controls="overview-panel"
+                        aria-selected="true">
+                    <i class="bi bi-grid" aria-hidden="true"></i>
+                    Overview
+                </button>
+
+                <button class="nav-link"
+                        id="opportunities-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#opportunities-panel"
+                        type="button"
+                        role="tab"
+                        aria-controls="opportunities-panel"
+                        aria-selected="false">
+                    <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                    Opportunities
+                </button>
+
+                <button class="nav-link"
+                        id="volunteers-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#volunteers-panel"
+                        type="button"
+                        role="tab"
+                        aria-controls="volunteers-panel"
+                        aria-selected="false">
+                    <i class="bi bi-people" aria-hidden="true"></i>
+                    Volunteers &amp; hours
+                </button>
+
+                {% if is_owner %}
+                <button class="nav-link"
+                        id="profile-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#profile-panel"
+                        type="button"
+                        role="tab"
+                        aria-controls="profile-panel"
+                        aria-selected="false">
+                    <i class="bi bi-buildings" aria-hidden="true"></i>
+                    Organization profile
+                </button>
+
+                <button class="nav-link"
+                        id="team-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#team-panel"
+                        type="button"
+                        role="tab"
+                        aria-controls="team-panel"
+                        aria-selected="false">
+                    <i class="bi bi-shield-check" aria-hidden="true"></i>
+                    Team &amp; roles
+                </button>
+                {% endif %}
+            </div>
+        </aside>
+
+        <div class="tab-content dashboard-content">
+            <section class="tab-pane fade show active"
+                     id="overview-panel"
+                     role="tabpanel"
+                     aria-labelledby="overview-tab"
+                     tabindex="0">
+                <div class="stats">
+                    <div class="stat">
+                        <span>OPPORTUNITIES</span>
+                        <strong>{{ open_count }}</strong>
+                        <small>Open listings</small>
+                    </div>
+
+                    <div class="stat">
+                        <span>Members</span>
+                        <strong>{{ members_count }}</strong>
+                        <small>Admins and owner</small>
+                    </div>
+
+                    <div class="stat">
+                        <span>SERVICE HOURS</span>
+                        <strong>{{ verified_hours }}</strong>
+                        <small>Approved service hours</small>
+                    </div>
+                </div>
+
+                <div class="workspace-panel">
+                    <div class="workspace-panel-heading">
+                        <h2>Coming up for your community</h2>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table workspace-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>OPPORTUNITY</th>
+                                    <th>DATE</th>
+                                    <th>CAPACITY</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for opportunity in opportunities %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ opportunity.title }}</strong>
+                                        <small>{{ opportunity.location }}</small>
+                                    </td>
+                                    <td>{{ opportunity.event_date.strftime('%b %d, %Y') }}</td>
+                                    <td>{{ approved_counts[opportunity.id] }} / {{ opportunity.volunteer_requirement }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-pane fade opportunities-panel"
+                     id="opportunities-panel"
+                     role="tabpanel"
+                     aria-labelledby="opportunities-tab"
+                     tabindex="0">
+                <div class="create-opportunity-heading">
+                    <div>
+                        <h2>Your opportunities</h2>
+                        <p>Listings belong to {{ organization.name }}. Use Manage organizations to open another team's workspace.</p>
+                    </div>
+
+                    <button type="button"
+                            class="create-opportunity-button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#createOpportunityModal">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                        Create opportunity
+                    </button>
+                </div>
+
+                <p id="create-opportunity-feedback"
+                   class="create-opportunity-feedback"
+                   role="status"
+                   aria-live="polite"
+                   hidden></p>
+
+                <div class="table-responsive">
+                    <table class="opportunities-table">
+                        <thead>
+                            <tr>
+                                <th>OPPORTUNITY</th>
+                                <th>DATE</th>
+                                <th>CAPACITY</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="opportunity-list">
+                            {% for opportunity in opportunities %}
+                            <tr>
+                                <td>
+                                    <strong>{{ opportunity.title }}</strong>
+                                    <small>{{ opportunity.location }}</small>
+                                </td>
+                                <td>{{ opportunity.event_date.strftime('%b %d, %Y') }}</td>
+                                <td>{{ approved_counts[opportunity.id] }} / {{ opportunity.volunteer_requirement }}</td>
+                                <td>
+                                    <div class="opportunity-actions">
+                                        <div class="opportunity-action-buttons">
+                                            <button type="button"
+                                                    class="opportunity-edit"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#editOpportunityModal-{{ opportunity.id }}">
+                                                <i class="bi bi-pencil" aria-hidden="true"></i>
+                                                Edit
+                                            </button>
+
+                                            <form method="post"
+                                                  action="{{ url_for('opportunities.delete_opportunity', opportunity_id=opportunity.id) }}">
+                                                <button type="submit" class="opportunity-delete">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <a href="{{ url_for('opportunities.view_opportunity', opportunity_id=opportunity.id) }}"
+                                           class="opportunity-view">
+                                            View
+                                            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    {% for opportunity in opportunities %}
+                    <div class="modal fade create-opportunity-modal"
+                         id="editOpportunityModal-{{ opportunity.id }}"
+                         tabindex="-1"
+                         aria-labelledby="editOpportunityTitle-{{ opportunity.id }}"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                            <form class="modal-content"
+                                  method="post"
+                                  action="{{ url_for('opportunities.edit_opportunity', opportunity_id=opportunity.id) }}"
+                                  enctype="multipart/form-data">
+                                <div class="modal-header">
+                                    <div>
+                                        <h2 class="modal-title" id="editOpportunityTitle-{{ opportunity.id }}">
+                                            Edit opportunity
+                                        </h2>
+                                        <p class="modal-intro">Update the details volunteers will see.</p>
+                                    </div>
+
+                                    <button type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <div class="row g-3">
+                                        <div class="col-12 create-field">
+                                            <label for="edit-title-{{ opportunity.id }}">Opportunity title</label>
+                                            <input class="form-control"
+                                                   id="edit-title-{{ opportunity.id }}"
+                                                   name="title"
+                                                   maxlength="100"
+                                                   value="{{ opportunity.title }}"
+                                                   required>
+                                        </div>
+
+                                        <div class="col-md-6 create-field">
+                                            <label for="edit-cause-{{ opportunity.id }}">Cause</label>
+                                            <input class="form-control"
+                                                   id="edit-cause-{{ opportunity.id }}"
+                                                   name="cause"
+                                                   maxlength="100"
+                                                   value="{{ opportunity.cause }}"
+                                                   required>
+                                        </div>
+
+                                        <div class="col-md-6 create-field">
+                                            <label for="edit-status-{{ opportunity.id }}">Status</label>
+                                            <select class="form-select"
+                                                    id="edit-status-{{ opportunity.id }}"
+                                                    name="status"
+                                                    required>
+                                                {% for status in ['draft', 'open', 'closed', 'completed', 'cancelled'] %}
+                                                <option value="{{ status }}"
+                                                        {% if opportunity.status == status %}selected{% endif %}>
+                                                    {{ status | capitalize }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6 create-field">
+                                            <label for="edit-date-{{ opportunity.id }}">Date</label>
+                                            <input class="form-control"
+                                                   id="edit-date-{{ opportunity.id }}"
+                                                   name="event_date"
+                                                   type="date"
+                                                   value="{{ opportunity.event_date.isoformat() }}"
+                                                   required>
+                                        </div>
+
+                                        <div class="col-md-3 create-field">
+                                            <label for="edit-start-{{ opportunity.id }}">Start time</label>
+                                            <input class="form-control"
+                                                   id="edit-start-{{ opportunity.id }}"
+                                                   name="start_time"
+                                                   type="time"
+                                                   value="{{ opportunity.start_time.strftime('%H:%M') }}"
+                                                   required>
+                                        </div>
+
+                                        <div class="col-md-3 create-field">
+                                            <label for="edit-end-{{ opportunity.id }}">End time</label>
+                                            <input class="form-control"
+                                                   id="edit-end-{{ opportunity.id }}"
+                                                   name="end_time"
+                                                   type="time"
+                                                   value="{{ opportunity.end_time.strftime('%H:%M') }}"
+                                                   required>
+                                        </div>
+
+                                        <div class="col-md-6 create-field">
+                                            <label for="edit-timezone-{{ opportunity.id }}">Timezone</label>
+                                            <input class="form-control"
+                                                   id="edit-timezone-{{ opportunity.id }}"
+                                                   name="timezone"
+                                                   maxlength="64"
+                                                   value="{{ opportunity.timezone }}"
+                                                   placeholder="e.g. America/New_York"
+                                                   required>
+                                        </div>
+
+                                        <div class="col-md-6 create-field">
+                                            <label for="edit-location-{{ opportunity.id }}">Location</label>
+                                            <input class="form-control"
+                                                   id="edit-location-{{ opportunity.id }}"
+                                                   name="location"
+                                                   maxlength="120"
+                                                   value="{{ opportunity.location }}"
+                                                   required>
+                                        </div>
+
+                                        <div class="col-md-6 create-field">
+                                            <label for="edit-spots-{{ opportunity.id }}">Volunteer spots</label>
+                                            <input class="form-control"
+                                                   id="edit-spots-{{ opportunity.id }}"
+                                                   name="volunteer_requirement"
+                                                   type="number"
+                                                   min="1"
+                                                   value="{{ opportunity.volunteer_requirement }}"
+                                                   required>
+                                        </div>
+
+                                        <div class="col-md-6 create-field">
+                                            <label for="edit-age-{{ opportunity.id }}">Minimum age (optional)</label>
+                                            <input class="form-control"
+                                                   id="edit-age-{{ opportunity.id }}"
+                                                   name="minimum_age"
+                                                   type="number"
+                                                   min="0"
+                                                   max="120"
+                                                   value="{{ opportunity.minimum_age if opportunity.minimum_age is not none else '' }}"
+                                                   placeholder="No minimum age">
+                                        </div>
+
+                                        <div class="col-12 create-field">
+                                            <label for="edit-description-{{ opportunity.id }}">Quick description</label>
+                                            <textarea class="form-control compact-textarea"
+                                                      id="edit-description-{{ opportunity.id }}"
+                                                      name="description"
+                                                      rows="2"
+                                                      maxlength="1200"
+                                                      required>{{ opportunity.description }}</textarea>
+                                        </div>
+
+                                        <div class="col-12 create-field">
+                                            <label for="edit-activities-{{ opportunity.id }}">What will volunteers do?</label>
+                                            <textarea class="form-control"
+                                                      id="edit-activities-{{ opportunity.id }}"
+                                                      name="activities"
+                                                      rows="4"
+                                                      maxlength="1200"
+                                                      required>{{ opportunity.activities }}</textarea>
+                                        </div>
+
+                                        <div class="col-12 create-field">
+                                            <label for="edit-materials-{{ opportunity.id }}">Materials volunteers need to bring</label>
+                                            <textarea class="form-control compact-textarea"
+                                                      id="edit-materials-{{ opportunity.id }}"
+                                                      name="materials"
+                                                      rows="2"
+                                                      maxlength="1200"
+                                                      required>{{ opportunity.materials }}</textarea>
+                                        </div>
+
+                                        <div class="col-12 create-field">
+                                            <label for="edit-image-{{ opportunity.id }}">Replace image (optional)</label>
+                                            <input class="form-control"
+                                                   id="edit-image-{{ opportunity.id }}"
+                                                   name="image"
+                                                   type="file"
+                                                   accept="image/png,image/jpeg,image/webp">
+                                            <small class="form-text">Leave blank to keep the current image.</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button"
+                                            class="modal-cancel"
+                                            data-bs-dismiss="modal">
+                                        Cancel
+                                    </button>
+
+                                    <button type="submit" class="modal-create">
+                                        Save changes
+                                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="tab-pane fade"
+                     id="volunteers-panel"
+                     role="tabpanel"
+                     aria-labelledby="volunteers-tab"
+                     tabindex="0">
+                <div class="workspace-panel">
+                    <h2>Volunteer requests</h2>
+                    <p>Review people who requested a place before adding them to the volunteer roster.</p>
+
+                    <div class="table-responsive">
+                        <table class="table workspace-table volunteer-request-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>VOLUNTEER</th>
+                                    <th>OPPORTUNITY</th>
+                                    <th>STATUS</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="volunteer-requests">
+                                {% for volunteer in volunteers %}
+                                    {% if volunteer.status == "pending" or volunteer.status == "waitlisted" %}
+                                    <tr>
+                                        <td>
+                                            <strong class="volunteer-name">
+                                                {{ volunteer.user.firstname }}
+                                                {{ volunteer.user.lastname }}
+                                            </strong>
+                                            <small>{{ volunteer.user.email }}</small>
+                                        </td>
+
+                                        <td>{{ volunteer.opportunity.title }}</td>
+
+                                        <td class="request-status">
+                                            <span class="workspace-badge gray">
+                                                <i class="bi bi-clock" aria-hidden="true"></i>
+                                                {{ volunteer.status | capitalize }}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <div class="volunteer-actions">
+                                                <form method="post"
+                                                      action="{{ url_for('organizations.approve_volunteer', signup_id=volunteer.id) }}">
+                                                    <button type="submit" class="workspace-btn workspace-btn-dark">
+                                                        Approve
+                                                    </button>
+                                                </form>
+
+                                                <form method="post"
+                                                      action="{{ url_for('organizations.deny_volunteer', signup_id=volunteer.id) }}">
+                                                    <button type="submit" class="workspace-btn">
+                                                        Deny
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% set pending_requests = volunteers | selectattr('status', 'equalto', 'pending') | list %}
+                    {% set waitlisted_requests = volunteers | selectattr('status', 'equalto', 'waitlisted') | list %}
+
+                    <p id="no-pending-requests"
+                       class="request-message"
+                       {% if pending_requests or waitlisted_requests %}hidden{% endif %}>
+                        No requests are awaiting review.
+                    </p>
+
+                    <p id="volunteer-feedback"
+                       class="request-message"
+                       role="status"
+                       aria-live="polite"></p>
+                </div>
+
+                <div class="workspace-panel">
+                    <h2>Volunteer roster</h2>
+                    <p>Volunteers confirmed for {{ organization.name }} appear here.</p>
+
+                    {% set approved_volunteers = volunteers
+                        | selectattr('status', 'equalto', 'approved')
+                        | list %}
+
+                    <section class="roster-section">
+                        <div class="roster-card">
+                            <div class="card-toolbar">
+                                <div class="toolbar-copy">
+                                    <h3>Confirmed volunteers</h3>
+                                    <p>
+                                        <span id="visible-count">
+                                            {{ approved_volunteers | length }}
+                                        </span>
+                                        people
+                                        <span id="filter-label">across all opportunities</span>
+                                    </p>
+                                </div>
+
+                                <div class="filter-wrap">
+                                    <label for="volunteer-opportunity-filter">
+                                        Show volunteers for
+                                    </label>
+
+                                    <select id="volunteer-opportunity-filter" class="form-select">
+                                        <option value="all">All opportunities</option>
+                                        {% for opportunity in opportunities %}
+                                        <option value="{{ opportunity.id }}">
+                                            {{ opportunity.title }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table workspace-table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>VOLUNTEER</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="confirmed-volunteers">
+                                        {% for volunteer in volunteers %}
+                                            {% if volunteer.status == "approved" %}
+                                            <tr data-opportunity-id="{{ volunteer.opportunity_id }}">
+                                                <td>
+                                                    <div class="volunteer-row">
+                                                        <div class="volunteer-info">
+                                                            <strong>
+                                                                {{ volunteer.user.firstname }}
+                                                                {{ volunteer.user.lastname }}
+                                                            </strong>
+                                                            <small>{{ volunteer.user.email }}</small>
+                                                        </div>
+
+                                                        <form method="post"
+                                                              action="{{ url_for('organizations.remove_volunteer', signup_id=volunteer.id) }}"
+                                                              onsubmit="return confirm('Remove this volunteer from the opportunity?');">
+                                                            <button type="submit" class="remove-volunteer-btn">
+                                                                Remove
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="workspace-panel">
+                    <h2>Service hours to review</h2>
+                    <p>Approvals update this organization's overview and the volunteer's service hours.</p>
+
+                    {% set pending_hours = service_hours
+                        | selectattr('status', 'equalto', 'unverified')
+                        | list %}
+
+                    <section class="roster-section hours-review-section">
+                        <div class="roster-card">
+                            <div class="card-toolbar">
+                                <div class="toolbar-copy">
+                                    <h3>Pending service records</h3>
+                                    <p>
+                                        <span id="visible-hours-count">
+                                            {{ pending_hours | length }}
+                                        </span>
+                                        records
+                                        <span id="hours-filter-label">
+                                            across all opportunities
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <div class="filter-wrap">
+                                    <label for="hours-opportunity-filter">
+                                        Show hours for
+                                    </label>
+
+                                    <select id="hours-opportunity-filter" class="form-select">
+                                        <option value="all">All opportunities</option>
+                                        {% for opportunity in opportunities %}
+                                        <option value="{{ opportunity.title }}">
+                                            {{ opportunity.title }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table workspace-table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>SERVICE RECORD</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="hours-review-list">
+                                        {% for hour in service_hours if hour.status == "unverified" %}
+                                        <tr data-opportunity-title="{{ hour.opportunity_title }}">
+                                            <td>
+                                                <div class="hours-record-row">
+                                                    <div class="hours-record-info">
+                                                        <strong>
+                                                            {{ hour.user.firstname }}
+                                                            {{ hour.user.lastname }}
+                                                        </strong>
+                                                        <small>{{ hour.user.email }}</small>
+
+                                                        <div class="hours-record-details">
+                                                            <span>{{ hour.opportunity_title }}</span>
+                                                            <span>·</span>
+                                                            <span>{{ hour.event_date.strftime('%b %d, %Y') }}</span>
+                                                            <span>·</span>
+                                                            <span>{{ hour.hours }} hours</span>
+                                                        </div>
+
+                                                        {% if hour.description %}
+                                                        <p>{{ hour.description }}</p>
+                                                        {% endif %}
+                                                    </div>
+
+                                                    <form method="post"
+                                                          class="hours-review-actions"
+                                                          action="{{ url_for('organizations.review_service_hour', record_id=hour.id) }}">
+                                                        <button type="submit"
+                                                                name="decision"
+                                                                value="deny"
+                                                                class="hours-deny-btn"
+                                                                onclick="return confirm('Deny these service hours?');">
+                                                            Deny
+                                                        </button>
+
+                                                        <button type="submit"
+                                                                name="decision"
+                                                                value="approve"
+                                                                class="hours-approve-btn">
+                                                            <i class="bi bi-check-lg" aria-hidden="true"></i>
+                                                            Approve
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </section>
+
+            {% if is_owner %}
+            <section class="tab-pane fade"
+                     id="profile-panel"
+                     role="tabpanel"
+                     aria-labelledby="profile-tab"
+                     tabindex="0">
+                <form class="workspace-panel"
+                      method="post"
+                      action="{{ url_for('organizations.edit_organization_profile', organization_id=organization.id) }}"
+                      enctype="multipart/form-data">
+                    <h2>Tell your community who you are.</h2>
+                    <p>Update the information shown on your organization's profile.</p>
+
+                    <div class="row g-3">
+                        <div class="col-12 workspace-field">
+                            <label for="org-name">Organization name</label>
+                            <input class="form-control"
+                                   id="org-name"
+                                   name="name"
+                                   value="{{ organization.name }}"
+                                   maxlength="70"
+                                   required>
+                        </div>
+
+                        <div class="col-md-6 workspace-field">
+                            <label for="org-cause">Primary cause</label>
+                            <input class="form-control"
+                                   id="org-cause"
+                                   name="cause"
+                                   value="{{ organization.cause }}"
+                                   maxlength="500"
+                                   placeholder="e.g. Food & essentials"
+                                   required>
+                        </div>
+
+                        <div class="col-md-6 workspace-field">
+                            <label for="org-location">Location</label>
+                            <input class="form-control"
+                                   id="org-location"
+                                   name="location"
+                                   value="{{ organization.location }}"
+                                   maxlength="150"
+                                   placeholder="e.g. Brooklyn, NY"
+                                   required>
+                        </div>
+
+                        <div class="col-12 workspace-field">
+                            <label for="org-email">Organization contact email</label>
+                            <input class="form-control"
+                                   id="org-email"
+                                   name="contact_email"
+                                   type="email"
+                                   value="{{ organization.email }}"
+                                   maxlength="50"
+                                   required>
+                        </div>
+
+                        <div class="col-12 workspace-field">
+                            <label for="org-description">A short introduction</label>
+                            <textarea class="form-control"
+                                      id="org-description"
+                                      name="description"
+                                      rows="3"
+                                      maxlength="1000"
+                                      required>{{ organization.description }}</textarea>
+                            <small>A sentence or two that makes your mission feel approachable.</small>
+                        </div>
+
+                        <div class="col-12 workspace-field">
+                            <label for="org-image">Organization image (optional)</label>
+
+                            {% if organization.image_filename %}
+                            <div class="profile-current-image-wrap">
+                                <img class="profile-current-image"
+                                     src="{{ url_for('static', filename='uploads/' ~ organization.image_filename) }}"
+                                     alt="Current image for {{ organization.name }}">
+                                <small>Current image</small>
+                            </div>
+                            {% endif %}
+
+                            <input class="form-control"
+                                   id="org-image"
+                                   name="image"
+                                   type="file"
+                                   accept="image/png,image/jpeg,image/webp">
+                            <small>Leave blank to keep the current image.</small>
+                        </div>
+                    </div>
+
+                    <div class="workspace-form-actions">
+                        <button type="submit" class="workspace-btn workspace-btn-dark">
+                            Save profile
+                            <i class="bi bi-check2" aria-hidden="true"></i>
+                        </button>
+
+                        <a href="{{ url_for('organizations.view_organization', organization_id=organization.id) }}">
+                            View profile
+                            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </form>
+            </section>
+
+            <section class="tab-pane fade"
+                     id="team-panel"
+                     role="tabpanel"
+                     aria-labelledby="team-tab"
+                     tabindex="0">
+                <div class="workspace-panel">
+                    <h2>A team behind your mission.</h2>
+                    <p>As owner, you can review admin requests and manage your team.</p>
+
+                    <h3 class="team-subheading">Admin requests</h3>
+
+                    <div class="table-responsive">
+                        <table class="table workspace-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>REQUESTED BY</th>
+                                    <th>STATUS</th>
+                                    <th>REVIEW</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for admin_request in pending_admin_requests %}
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            {{ admin_request.user.firstname }}
+                                            {{ admin_request.user.lastname }}
+                                        </strong>
+                                        <small>{{ admin_request.user.email }}</small>
+                                    </td>
+
+                                    <td>
+                                        <span class="workspace-badge gray">Pending</span>
+                                    </td>
+
+                                    <td>
+                                        <form class="team-review-actions"
+                                              method="post"
+                                              action="{{ url_for('organizations.review_admin_request', organization_id=organization.id, request_id=admin_request.id) }}">
+                                            <button type="submit"
+                                                    name="decision"
+                                                    value="deny"
+                                                    class="workspace-btn team-deny-btn">
+                                                Deny
+                                            </button>
+
+                                            <button type="submit"
+                                                    name="decision"
+                                                    value="approve"
+                                                    class="workspace-btn workspace-btn-dark">
+                                                Approve
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="team-empty">
+                                        No admin requests are waiting for review.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="team-subheading">Current team</h3>
+
+                    <div class="table-responsive">
+                        <table class="table workspace-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>TEAM MEMBER</th>
+                                    <th>ROLE HERE</th>
+                                    <th>ACCESS</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for member in organization.members %}
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            {{ member.user.firstname }}
+                                            {{ member.user.lastname }}
+                                            {% if member.user_id == session.get('user_id') %}
+                                                (you)
+                                            {% endif %}
+                                        </strong>
+                                        <small>{{ member.user.email }}</small>
+                                    </td>
+
+                                    <td>
+                                        <span class="workspace-badge {% if member.role == 'admin' %}gray{% endif %}">
+                                            {{ member.role | capitalize }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        {% if member.role == "owner" %}
+                                            Organization owner
+                                        {% else %}
+                                            <form method="post"
+                                                  action="{{ url_for('organizations.remove_admin', membership_id=member.id) }}">
+                                                <button type="submit" class="workspace-btn">
+                                                    Remove admin
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="workspace-panel">
+                    <h2>Your role belongs to the organization.</h2>
+                    <p>
+                        One account can own several organizations and be an admin in others.
+                        Every organization has one owner.
+                    </p>
+
+                    <div class="table-responsive">
+                        <table class="table workspace-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>PERMISSION</th>
+                                    <th>OWNER</th>
+                                    <th>ADMIN</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>Manage opportunities &amp; volunteers</td>
+                                    <td>Yes</td>
+                                    <td>Yes</td>
+                                </tr>
+                                <tr>
+                                    <td>Review service hours</td>
+                                    <td>Yes</td>
+                                    <td>Yes</td>
+                                </tr>
+                                <tr>
+                                    <td>Manage team access</td>
+                                    <td>Yes</td>
+                                    <td>No</td>
+                                </tr>
+                                <tr>
+                                    <td>Edit organization profile</td>
+                                    <td>Yes</td>
+                                    <td>No</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="modal fade create-opportunity-modal"
+     id="createOpportunityModal"
+     tabindex="-1"
+     aria-labelledby="createOpportunityTitle"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <form id="create-opportunity-form"
+              class="modal-content"
+              method="post"
+              action="{{ url_for('opportunities.create_opportunity', organization_id=organization.id) }}"
+              enctype="multipart/form-data">
+            <div class="modal-header">
+                <div>
+                    <h2 class="modal-title" id="createOpportunityTitle">
+                        Create an opportunity
+                    </h2>
+                    <p class="modal-intro">
+                        Tell volunteers what they will do and when to show up.
+                    </p>
+                </div>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12 create-field">
+                        <label for="new-opportunity-title">Opportunity title</label>
+                        <input class="form-control"
+                               id="new-opportunity-title"
+                               name="title"
+                               maxlength="80"
+                               placeholder="e.g. Help at the community pantry"
+                               required>
+                    </div>
+
+                    <div class="col-md-6 create-field">
+                        <label for="new-opportunity-cause">Cause</label>
+                        <input class="form-control"
+                               id="new-opportunity-cause"
+                               name="cause"
+                               list="opportunity-cause-suggestions"
+                               maxlength="60"
+                               placeholder="e.g. Food &amp; essentials"
+                               required>
+
+                        <datalist id="opportunity-cause-suggestions">
+                            <option value="Food &amp; essentials">
+                            <option value="Community">
+                            <option value="Education">
+                            <option value="Environment">
+                        </datalist>
+                    </div>
+
+                    <div class="col-md-6 create-field">
+                        <label for="new-opportunity-date">Date</label>
+                        <input class="form-control"
+                               id="new-opportunity-date"
+                               name="date"
+                               type="date"
+                               required>
+                    </div>
+
+                    <div class="col-md-6 create-field">
+                        <label for="new-opportunity-start">Start time</label>
+                        <input class="form-control"
+                               id="new-opportunity-start"
+                               name="start_time"
+                               type="time"
+                               required>
+                    </div>
+
+                    <div class="col-md-6 create-field">
+                        <label for="new-opportunity-end">End time</label>
+                        <input class="form-control"
+                               id="new-opportunity-end"
+                               name="end_time"
+                               type="time"
+                               required>
+                    </div>
+
+                    <div class="col-md-8 create-field">
+                        <label for="new-opportunity-location">Location</label>
+                        <input class="form-control"
+                               id="new-opportunity-location"
+                               name="location"
+                               maxlength="100"
+                               placeholder="Brooklyn, NY or Remote"
+                               required>
+                    </div>
+
+                    <div class="col-md-4 create-field">
+                        <label for="new-opportunity-capacity">Volunteer spots</label>
+                        <input class="form-control"
+                               id="new-opportunity-capacity"
+                               name="capacity"
+                               type="number"
+                               min="1"
+                               max="500"
+                               placeholder="12"
+                               required>
+                    </div>
+
+                    <div class="col-md-6 create-field">
+                        <label for="new-opportunity-minimum-age">Minimum age (optional)</label>
+                        <input class="form-control"
+                               id="new-opportunity-minimum-age"
+                               name="minimum_age"
+                               type="number"
+                               min="1"
+                               max="120"
+                               placeholder="Leave blank if there is no minimum">
+                    </div>
+
+                    <div class="col-md-6 create-field">
+                        <label for="new-opportunity-timezone">Time zone</label>
+                        <select class="form-select"
+                                id="new-opportunity-timezone"
+                                name="timezone"
+                                required>
+                            <option value="" disabled selected>Select a time zone</option>
+                            <option value="America/New_York">Eastern</option>
+                            <option value="America/Chicago">Central</option>
+                            <option value="America/Denver">Mountain</option>
+                            <option value="America/Phoenix">Arizona</option>
+                            <option value="America/Los_Angeles">Pacific</option>
+                            <option value="America/Anchorage">Alaska</option>
+                            <option value="Pacific/Honolulu">Hawaii</option>
+                            <option value="UTC">UTC</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 create-field">
+                        <label for="new-opportunity-summary">Quick description</label>
+                        <textarea class="form-control compact-textarea"
+                                  id="new-opportunity-summary"
+                                  name="summary"
+                                  rows="2"
+                                  maxlength="250"
+                                  placeholder="A sentence or two about this opportunity."
+                                  required></textarea>
+                    </div>
+
+                    <div class="col-12 create-field">
+                        <label for="new-opportunity-description">What will volunteers do?</label>
+                        <textarea class="form-control"
+                                  id="new-opportunity-description"
+                                  name="description"
+                                  rows="4"
+                                  maxlength="1000"
+                                  placeholder="Describe the activity and what volunteers can expect."
+                                  required></textarea>
+                    </div>
+
+                    <div class="col-12 create-field">
+                        <label for="new-opportunity-materials">Materials volunteers need to bring</label>
+                        <textarea class="form-control compact-textarea"
+                                  id="new-opportunity-materials"
+                                  name="materials"
+                                  rows="2"
+                                  maxlength="400"
+                                  placeholder="e.g. Water bottle and closed-toe shoes. Enter None if nothing is needed."
+                                  required></textarea>
+                    </div>
+
+                    <div class="col-12 create-field">
+                        <label for="new-opportunity-image">Opportunity image (optional)</label>
+                        <input class="form-control"
+                               id="new-opportunity-image"
+                               name="image"
+                               type="file"
+                               accept="image/png,image/jpeg,image/webp"
+                               aria-describedby="new-opportunity-image-help">
+                        <small class="form-text" id="new-opportunity-image-help">
+                            If you leave this blank, Gather can use the default opportunity image.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="modal-create">
+                    Create opportunity
+                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const opportunityFilter = document.getElementById("volunteer-opportunity-filter");
+    const volunteerRows = document.querySelectorAll(
+        "#confirmed-volunteers tr[data-opportunity-id]"
+    );
+
+    opportunityFilter.addEventListener("change", function () {
+        let visibleCount = 0;
+
+        volunteerRows.forEach(function (row) {
+            const show =
+                opportunityFilter.value === "all" ||
+                row.dataset.opportunityId === opportunityFilter.value;
+
+            row.style.display = show ? "" : "none";
+            if (show) visibleCount++;
+        });
+
+        document.getElementById("visible-count").textContent = visibleCount;
+
+        document.getElementById("filter-label").textContent =
+            opportunityFilter.value === "all"
+                ? "across all opportunities"
+                : "for " + opportunityFilter.options[opportunityFilter.selectedIndex].text;
+    });
+</script>
+
+<script>
+    const hoursFilter = document.getElementById("hours-opportunity-filter");
+    const hoursRows = document.querySelectorAll(
+        "#hours-review-list tr[data-opportunity-title]"
+    );
+
+    hoursFilter.addEventListener("change", function () {
+        let visibleCount = 0;
+
+        hoursRows.forEach(function (row) {
+            const show =
+                hoursFilter.value === "all" ||
+                row.dataset.opportunityTitle === hoursFilter.value;
+
+            row.style.display = show ? "" : "none";
+            if (show) visibleCount++;
+        });
+
+        document.getElementById("visible-hours-count").textContent = visibleCount;
+
+        document.getElementById("hours-filter-label").textContent =
+            hoursFilter.value === "all"
+                ? "across all opportunities"
+                : "for " + hoursFilter.options[hoursFilter.selectedIndex].text;
+    });
+</script>
+{% endblock %}

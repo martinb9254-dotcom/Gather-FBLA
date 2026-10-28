@@ -1,0 +1,304 @@
+
+.organizations-workspace {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.organization-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 25px;
+    background-color: #FFFFFF;
+    border: 1px solid #E2E5DC;
+    border-radius: 15px;
+}
+
+.organization-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.organization-avatar {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background-color: #EDF0E3;
+    color: #193F36;
+    font-family: 'Manrope', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.organization-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
+    border-radius: 20px;
+    background-color: #EAF0DC;
+    color: #193F36;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.organization-role.admin {
+    background-color: #F0F1ED;
+    color: #68716A;
+}
+
+.organization-role i {
+    font-size: 12px;
+}
+
+.organization-card h3 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.035em;
+    color: #193F36;
+    margin: 0 0 12px;
+}
+
+.organization-description {
+    flex: 1;
+    font-size: 13px;
+    line-height: 1.75;
+    color: #6B756F;
+    margin: 0 0 18px;
+}
+
+.organization-location {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    color: #6B756F;
+}
+
+.organization-location i {
+    font-size: 14px;
+}
+
+.organization-counts {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    border-top: 1px solid #E2E5DC;
+    padding-top: 16px;
+    margin-top: 19px;
+    margin-bottom: 20px;
+    font-size: 11px;
+    color: #6B756F;
+}
+
+.organization-counts strong {
+    font-weight: 600;
+    color: #193F36;
+}
+
+.organization-open {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 1px solid #193F36;
+    border-radius: 9px;
+    background-color: #193F36;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.organization-open:hover {
+    background-color: #2E574A;
+    border-color: #2E574A;
+    color: #FFFFFF;
+}
+
+.organization-profile {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #193F36;
+    text-decoration: none;
+}
+
+.organization-profile:hover {
+    color: #193F36;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.organization-header h5{
+    font-family: 'Manrope', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: #193F36;
+}
+
+.organization-header {
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.create-organization-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 46px;
+    padding: 13px 20px;
+    border-radius: 9px;
+    background-color: #CD4C32;
+    color: #FFFFFF;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.create-organization-btn:hover {
+    background-color: #AC3822;
+    color: #FFFFFF;
+} 
+
+.container {
+    margin-top: 60px;
+    margin-bottom: 80px;
+}
+
+.organization-header p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #6B756F;
+    line-height: 1.7;
+    margin: 15px 0 0;
+}
+
+.account-dropdown-menu {
+    margin-top: 15px;
+}
+
+.signout-icon {
+    padding-left: 5px;
+}
+
+.create-organization-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.organization-feedback {
+    margin: 0 0 18px;
+    color: #193f36;
+    font: 400 13px 'DM Sans', sans-serif;
+}
+
+.create-organization-modal .modal-content {
+    border: 1px solid #e2e5dc;
+    border-radius: 18px;
+    background: #faf9f5;
+    font-family: 'DM Sans', sans-serif;
+    overflow: hidden;
+}
+
+.create-organization-modal .modal-header {
+    align-items: flex-start;
+    border-bottom: 1px solid #e2e5dc;
+    padding: 24px 28px 20px;
+}
+
+.create-organization-modal .modal-title {
+    color: #193f36;
+    font: 700 25px 'Manrope', sans-serif;
+    letter-spacing: -0.04em;
+}
+
+.create-organization-modal .modal-intro {
+    margin: 7px 0 0;
+    color: #6b756f;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.create-organization-modal .modal-body {
+    padding: 24px 28px;
+}
+
+.create-organization-modal label {
+    display: block;
+    margin-bottom: 7px;
+    color: #193f36;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.create-organization-modal .form-control {
+    border: 1px solid #d9dfd4;
+    border-radius: 8px;
+    background: #fff;
+    color: #30463f;
+    font: 400 13px 'DM Sans', sans-serif;
+    padding: 10px 12px;
+}
+
+.create-organization-modal textarea.form-control {
+    min-height: 105px;
+    resize: vertical;
+}
+
+.create-organization-modal .form-control:focus {
+    border-color: #7b9764;
+    box-shadow: 0 0 0 3px #dfe9bf80;
+}
+
+.create-organization-modal .modal-footer {
+    border-top: 1px solid #e2e5dc;
+    padding: 16px 28px;
+}
+
+.create-organization-modal .modal-cancel,
+.create-organization-modal .modal-create {
+    border-radius: 8px;
+    padding: 10px 16px;
+    font: 700 12px 'DM Sans', sans-serif;
+}
+
+.create-organization-modal .modal-cancel {
+    border: 1px solid #d9dfd4;
+    background: #fff;
+    color: #193f36;
+}
+
+.create-organization-modal .modal-create {
+    border: 1px solid #193f36;
+    background: #193f36;
+    color: #fff;
+}
+
+.create-organization-modal .modal-create:hover {
+    background: #2e574a;
+}

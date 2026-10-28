@@ -1,0 +1,201 @@
+.opportunity-page {
+    width: min(90%, 1120px);
+    margin: 50px auto 90px;
+    color: #193f36;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.opportunity-page .opportunity-hero {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+    overflow: hidden;
+    border: 1px solid #e2e5dc;
+    border-radius: 22px;
+    background: #edf0e3;
+}
+
+.opportunity-page .opportunity-image {
+    flex: 1 1 38%;
+    width: 38%;
+    min-width: 290px;
+    min-height: 310px;
+    object-fit: cover;
+}
+
+.opportunity-page .opportunity-hero-content {
+    flex: 1 1 340px;
+    min-width: 0;
+    padding: 38px clamp(24px, 4vw, 48px);
+    align-self: center;
+}
+
+.opportunity-page .eyebrow {
+    color: #687b63;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.opportunity-page .cause-tag {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 7px 11px;
+    border-radius: 30px;
+    background: #dfe8c9;
+    color: #193f36;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.opportunity-page .organization-name {
+    margin: 22px 0 8px;
+    color: #526259;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.opportunity-page .opportunity-hero h1 {
+    margin: 0;
+    color: #193f36;
+    font: 700 clamp(30px, 4vw, 46px)/1.12 'Manrope', sans-serif;
+    letter-spacing: -0.05em;
+    overflow-wrap: anywhere;
+}
+
+.opportunity-page .opportunity-summary {
+    max-width: 480px;
+    margin: 18px 0 0;
+    color: #526259;
+    font-size: 15px;
+    line-height: 1.65;
+}
+
+.opportunity-page .opportunity-sections {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    margin-top: 24px;
+}
+
+.opportunity-page .detail-card {
+    padding: 30px;
+    border: 1px solid #e2e5dc;
+    border-radius: 20px;
+    background: #fff;
+}
+
+.opportunity-page .detail-card h2 {
+    margin: 12px 0 18px;
+    color: #193f36;
+    font: 700 23px 'Manrope', sans-serif;
+    letter-spacing: -0.035em;
+}
+
+.opportunity-page .about-card {
+    flex: 1 1 500px;
+    min-width: 0;
+}
+
+.opportunity-page .about-card p {
+    margin: 0 0 16px;
+    color: #6b756f;
+    font-size: 14px;
+    line-height: 1.75;
+}
+
+.opportunity-page .materials-section {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid #e2e5dc;
+}
+
+.opportunity-page .materials-section h3 {
+    margin: 0 0 10px;
+    color: #193f36;
+    font: 700 17px 'Manrope', sans-serif;
+}
+
+.opportunity-page .materials-section p {
+    margin: 0;
+}
+
+.opportunity-page .signup-card {
+    flex: 1 1 300px;
+    min-width: 0;
+}
+
+.opportunity-page .detail-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.opportunity-page .detail-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    background: #edf0e3;
+    color: #193f36;
+    font-size: 17px;
+}
+
+.opportunity-page .detail-label {
+    display: block;
+    margin-bottom: 2px;
+    color: #6b756f;
+    font-size: 11px;
+}
+
+.opportunity-page .detail-row strong {
+    display: block;
+    color: #193f36;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.opportunity-page .signup-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: 28px;
+    padding: 13px 18px;
+    border: 0;
+    border-radius: 10px;
+    background: #193f36;
+    color: #fff;
+    font: 700 13px 'DM Sans', sans-serif;
+    cursor: pointer;
+}
+
+.opportunity-page .signup-btn:hover {
+    background: #2d594b;
+}
+
+.opportunity-page .save-opportunity-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px 16px;
+    border: 1px solid #193f36;
+    border-radius: 10px;
+    background: #fff;
+    color: #193f36;
+    font: 700 12px 'DM Sans', sans-serif;
+    cursor: pointer;
+}
+
+.opportunity-page .save-opportunity-btn:hover,
+.opportunity-page .save-opportunity-btn.is-saved {
+    background: #edf0e3;
+}

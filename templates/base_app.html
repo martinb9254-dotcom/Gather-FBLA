@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Manrope:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='base_app.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='gather-logo-icon.png') }}">
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="logo nav-element">
+            <img class="logo-img"
+                 src="{{ url_for('static', filename='gather-logo.png') }}"
+                 alt="Gather">
+        </div>
+
+        <div class="dropdown">
+            <button class="btn dropdown-toggle account-toggle"
+                    type="button"
+                    id="dropdownMenuButton"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                <div id="initial-circle">
+                    {{ user.firstname[0] }}{{ user.lastname[0] }}
+                </div>
+                <span>
+                    {{ user.firstname }} {{ user.lastname }}
+                    <i class="bi bi-chevron-down" aria-hidden="true"></i>
+                </span>
+            </button>
+
+            <div class="dropdown-menu corner-dropdown-list dropdown-menu-end">
+                <span class="dropdown-item">
+                    {{ user.firstname }} {{ user.lastname }}
+                </span>
+
+                <div class="dropdown-divider"></div>
+
+                <a class="dropdown-item corner-dropdown-item"
+                   href="{{ url_for('dashboard.dashboard') }}">
+                    Dashboard
+                </a>
+                <a class="dropdown-item corner-dropdown-item"
+                   href="{{ url_for('organizations.manage_organizations') }}">
+                    Manage organizations
+                </a>
+                <a class="dropdown-item corner-dropdown-item"
+                   href="{{ url_for('opportunities.search_opportunities') }}">
+                    Search opportunities
+                </a>
+                <a class="dropdown-item corner-dropdown-item"
+                   href="{{ url_for('organizations.search_organizations') }}">
+                    Browse organizations
+                </a>
+                <a class="dropdown-item corner-dropdown-item"
+                    href="{{ url_for('auth.edit_profile') }}">
+                    Edit profile
+                </a>
+
+                <div class="dropdown-divider"></div>
+
+                <a class="dropdown-item corner-signout"
+                   href="{{ url_for('auth.signout') }}">
+                    Sign out
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="gather-flashes">
+            {% for category, message in messages %}
+                {% set style = category if category in ['success', 'danger', 'warning', 'info'] else 'info' %}
+
+                <div class="alert alert-{{ style }} alert-dismissible fade show gather-flash"
+                     role="{{ 'alert' if style == 'danger' else 'status' }}">
+
+                    {% if style == 'success' %}
+                        <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                    {% elif style == 'danger' %}
+                        <i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i>
+                    {% elif style == 'warning' %}
+                        <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+                    {% else %}
+                        <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+                    {% endif %}
+
+                    <span>{{ message }}</span>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close message"></button>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

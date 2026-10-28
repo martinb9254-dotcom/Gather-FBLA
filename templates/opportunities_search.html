@@ -1,0 +1,138 @@
+{% extends "base_app.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='opportunities_search.css') }}">
+    <title>Search Opportunities</title>
+{% endblock %}
+
+{% block content %}
+    <main class="search-page">
+        <header class="page-intro">
+            <div class="eyebrow">A little time. Plenty of possibility.</div>
+            <h1>Find your kind of good.</h1>
+            <p>Search for a cause, activity, or organization. Your next small act starts here.</p>
+        </header>
+
+        <form class="opportunity-search" id="opportunity-search-form" role="search">
+            <label for="search-query">Search opportunities</label>
+            <div class="search-controls">
+                <div class="search-field">
+                    <i class="bi bi-search" aria-hidden="true"></i>
+                    <input id="search-query"
+                           name="q"
+                           type="search"
+                           placeholder="Try food, gardening, or reading">
+                </div>
+
+                <button type="submit">
+                    Search
+                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                </button>
+            </div>
+        </form>
+
+        <section class="results" id="results" aria-labelledby="results-title">
+            <div class="results-heading">
+                <div>
+                    <div class="eyebrow">Ways to show up</div>
+                    <h2 id="results-title" role="status" aria-live="polite">
+                        {{ opportunities | length }} opportunities to explore
+                    </h2>
+                    <p>Local moments and ways to help from home.</p>
+                </div>
+            </div>
+
+            <div class="opportunity-list">
+                {% for opportunity in opportunities %}
+                    {% set approved_count = opportunity.signups
+                        | selectattr('status', 'equalto', 'approved')
+                        | list
+                        | length %}
+                    {% set spots_left = opportunity.volunteer_requirement - approved_count %}
+
+                    <article class="opportunity-card">
+                        <div class="card-image">
+                            <img src="{{ url_for('static', filename='uploads/' ~ opportunity.image_filename) if opportunity.image_filename else url_for('static', filename='default-opportunity.png') }}"
+                                 alt="{{ opportunity.title }}"
+                                 loading="lazy">
+
+                            <span class="cause-tag">
+                                <i class="bi bi-heart" aria-hidden="true"></i>
+                                {{ opportunity.cause }}
+                            </span>
+                        </div>
+
+                        <div class="opportunity-content">
+                            <span class="organization-name">
+                                {{ opportunity.organization.name }}
+                            </span>
+
+                            <h3>{{ opportunity.title }}</h3>
+
+                            <div class="opportunity-meta">
+                                <span>
+                                    <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                                    {{ opportunity.event_date.strftime('%b %d, %Y') }}
+                                </span>
+
+                                <span>
+                                    <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                                    {{ opportunity.location }}
+                                </span>
+                            </div>
+
+                            <div class="card-bottom">
+                                <span class="spots">
+                                    {{ spots_left if spots_left > 0 else 0 }} spots open
+                                </span>
+
+                                <a class="details-link"
+                                   href="{{ url_for('opportunities.view_opportunity', opportunity_id=opportunity.id) }}">
+                                    View details
+                                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+
+            <p class="empty-state" id="no-results" hidden>
+                No matches just yet. Try another word or browse every opportunity.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const searchForm = document.getElementById('opportunity-search-form');
+        const searchInput = document.getElementById('search-query');
+        const cards = document.querySelectorAll('.opportunity-card');
+        const resultsTitle = document.getElementById('results-title');
+        const noResults = document.getElementById('no-results');
+
+        function filterOpportunities() {
+            const query = searchInput.value.trim().toLowerCase();
+            let count = 0;
+
+            cards.forEach(card => {
+                const matches = card.textContent.toLowerCase().includes(query);
+                card.hidden = !matches;
+                if (matches) count++;
+            });
+
+            resultsTitle.textContent =
+                `${count} ${count === 1 ? 'opportunity' : 'opportunities'} ${query ? 'found' : 'to explore'}`;
+
+            noResults.hidden = count !== 0;
+        }
+
+        searchForm.addEventListener('submit', event => {
+            event.preventDefault();
+            filterOpportunities();
+        });
+
+        searchInput.addEventListener('input', () => {
+            if (!searchInput.value.trim()) filterOpportunities();
+        });
+    </script>
+{% endblock %}

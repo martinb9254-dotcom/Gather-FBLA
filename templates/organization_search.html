@@ -1,0 +1,112 @@
+{% extends "base_app.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='organization_search.css') }}">
+<title>Find organizations</title>
+{% endblock %}
+
+{% block content %}
+<main class="org-search-page">
+    <header class="org-search-intro">
+        <div class="org-eyebrow">Good grows together</div>
+        <h1>Find people doing good.</h1>
+        <p>Meet local organizations, explore what they do, and find a team that feels like yours.</p>
+    </header>
+
+    <form class="org-search-form"
+          method="get"
+          action="{{ url_for('organizations.search_organizations') }}"
+          role="search">
+        <div class="org-search-input">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <label class="visually-hidden" for="organization-query">Search organizations</label>
+            <input id="organization-query"
+                   name="q"
+                   type="search"
+                   value="{{ query_text }}"
+                   placeholder="Search by name, cause, or location">
+        </div>
+
+        <button type="submit">
+            Search <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </button>
+    </form>
+
+    <section class="org-results" aria-labelledby="org-results-title">
+        <div class="org-results-heading">
+            <div>
+                <div class="org-eyebrow">Communities to join</div>
+                <h2 id="org-results-title">Organizations</h2>
+            </div>
+
+            <span>
+                {{ organizations|length }}
+                {{ 'organization' if organizations|length == 1 else 'organizations' }}
+            </span>
+        </div>
+
+        {% if organizations %}
+        <div class="org-card-grid">
+            {% for organization in organizations %}
+            <article class="org-card">
+                <div class="org-card-image">
+                    {% if organization.image_filename %}
+                    <img src="{{ url_for('static', filename='uploads/' ~ organization.image_filename) }}"
+                         alt="{{ organization.name }}"
+                         loading="lazy">
+                    {% else %}
+                    <div class="org-image-placeholder" aria-hidden="true">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    {% endif %}
+
+                    <span class="org-cause-tag">{{ organization.cause }}</span>
+                </div>
+
+                <div class="org-card-content">
+                    <div class="org-card-label">Community organization</div>
+                    <h3>{{ organization.name }}</h3>
+
+                    <p>{{ organization.description|truncate(120, True, '…') }}</p>
+
+                    <div class="org-card-meta">
+                        <span>
+                            <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                            {{ organization.location }}
+                        </span>
+
+                        <span>
+                            <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                            {{ organization.opportunities|length }}
+                            {{ 'opportunity' if organization.opportunities|length == 1 else 'opportunities' }}
+                        </span>
+                    </div>
+
+                    <div class="org-card-bottom">
+                        <span>Get to know the team</span>
+
+                        <a href="{{ url_for('organizations.view_organization', organization_id=organization.id) }}">
+                            View organization
+                            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="org-empty-state">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <h3>No organizations found</h3>
+            <p>Try a different name, cause, or location.</p>
+
+            {% if query_text %}
+            <a href="{{ url_for('organizations.search_organizations') }}">
+                See all organizations
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
+</main>
+{% endblock %}
